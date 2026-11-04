@@ -20,9 +20,14 @@ const requirePi = createRequire(import.meta.resolve("@earendil-works/pi-coding-a
 async function launch({ args = [], config = {}, env = {} } = {}) {
   const root = await mkdtemp(join(tmpdir(), "atria-reasoning-launcher-"));
   try {
-    await mkdir(join(root, "node_modules", ".bin"), { recursive: true });
+    const piDirectory = join(
+      root,
+      "node_modules",
+      ...(process.platform === "win32" ? ["@earendil-works", "pi-coding-agent", "dist", "bundle"] : [".bin"])
+    );
+    await mkdir(piDirectory, { recursive: true });
     await writeFile(
-      join(root, "node_modules", ".bin", process.platform === "win32" ? "pi.cmd" : "pi"),
+      join(piDirectory, process.platform === "win32" ? "cli.js" : "pi"),
       `
 console.log(JSON.stringify({
   args: process.argv.slice(2),

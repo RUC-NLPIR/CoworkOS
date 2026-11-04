@@ -31,12 +31,11 @@ export async function startPi({ uiCompatibility } = {}) {
   let projectExecutionTimer;
   try {
     const harnessRoot = resolve(process.env.COWORK_HARNESS_ROOT ?? process.cwd());
-    const piBin = resolve(
-      harnessRoot,
-      "node_modules",
-      ".bin",
-      process.platform === "win32" ? "pi.cmd" : "pi"
-    );
+    // Node loads JavaScript, not npm's Windows batch shim. Keep shell-free argv forwarding.
+    const piBin =
+      process.platform === "win32"
+        ? resolve(harnessRoot, "node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js")
+        : resolve(harnessRoot, "node_modules/.bin/pi");
     let piEntry = resolve(
       harnessRoot,
       "node_modules",

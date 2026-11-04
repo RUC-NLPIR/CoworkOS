@@ -14,10 +14,15 @@ async function fixture(t) {
   const root = await mkdtemp(join(tmpdir(), "atria-watch-launcher-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const evidence = join(root, "supervisor.json");
-  await mkdir(join(root, "node_modules", ".bin"), { recursive: true });
+  const piDirectory = join(
+    root,
+    "node_modules",
+    ...(process.platform === "win32" ? ["@earendil-works", "pi-coding-agent", "dist", "bundle"] : [".bin"])
+  );
+  await mkdir(piDirectory, { recursive: true });
   await mkdir(join(root, "dist", "src", "cli"), { recursive: true });
   await writeFile(
-    join(root, "node_modules", ".bin", process.platform === "win32" ? "pi.cmd" : "pi"),
+    join(piDirectory, process.platform === "win32" ? "cli.js" : "pi"),
     "console.log('fixture Pi exited');\n"
   );
   await writeFile(
